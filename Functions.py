@@ -38,7 +38,7 @@ def create_map():
     return maze
 
 
-def coordinates_of(maze, value):
+def coordinates_of(maze, value):  # to find R and D
     for i, x in enumerate(maze):
         if value in x:
             return [i, x.index(value)]
@@ -47,45 +47,12 @@ def coordinates_of(maze, value):
 def is_floor(maze, coordinate):
     return maze[coordinate[0]][coordinate[1]] == 0
 
+def tree_search(maze):
+    return 0
 
-def get_children(parent, maze, moves, goal):
-    children = []
-    directions = []
+def graph_search(maze):
+    return 0
 
-    i = parent.data[1]
-    while (i > -1 and maze[parent.data[0]][i] != 1):
-        if maze[parent.data[0]][i - 1] == 1 and i != parent.data[1]:
-            directions.append([parent.data[0], i])
-        i -= 1
-    i = parent.data[1]
-    while (i < len(maze[parent.data[0]]) and maze[parent.data[0]][i] != 1):
-        if maze[parent.data[0]][i + 1] == 1 and i != parent.data[1]:
-            directions.append([parent.data[0], i])
-        i += 1
-    mazeColumn = ([x[parent.data[1]] for x in maze])
-    i = parent.data[0]
-    while (i > -1 and mazeColumn[i] != 1):
-        if mazeColumn[i - 1] == 1 and i != parent.data[1]:
-            directions.append([i, parent.data[1]])
-        i -= 1
-    i = parent.data[0]
-    while (i < len(mazeColumn) and mazeColumn[i] != 1):
-        if mazeColumn[i + 1] == 1 and i != parent.data[1]:
-            directions.append([i, parent.data[1]])
-        i += 1
-
-    if goal in directions:
-        return [Node(goal, parent)]
-
-    moves_coordinates = []
-
-    for move in moves:
-        moves_coordinates.append(move.data)
-
-    for direction in directions:
-        if is_floor(maze, direction) and direction not in moves_coordinates:
-            children.append(Node(direction, parent))
-    return children
 
 
 def print_maze(maze):
@@ -102,5 +69,6 @@ def print_maze(maze):
                 print(character, end=' ')
     print()
 
-def depth_first_search(maze):
-    return maze
+
+
+
