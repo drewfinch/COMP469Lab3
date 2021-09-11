@@ -18,10 +18,14 @@ class Node:
         self.children = []
         self.data = data
 
+    def copy(self):
+        newNode = Node(self.data, self.parent)
+        return newNode
 
 def create_map():
     # map_name = input("Enter map name(try \"mazeMap.txt\"): ")
-    map_name = "mazeMap.txt"
+    # map_name = "mazeMap.txt"
+    map_name = "testMazeTree1.txt"
     file = open(map_name, "r")
     maze = []
     line = []
@@ -53,6 +57,8 @@ def coordinates_of(maze, value):  # to find R and D
 
 #Checks that current location is not the wall
 #   Inlined Func: needed?
+#   Not going to use this function: Starting location is legal to return to, but if using this for checking
+#       valid position, is_floor only returns True if that space is 0.
 def is_floor(maze, coordinate):
     return maze[coordinate[0]][coordinate[1]] == 0
 
@@ -60,12 +66,10 @@ def is_floor(maze, coordinate):
 def tree_successor_func(maze, currentNode):
     goalFound = False
     copyLocation = currentNode.data.copy()
-    #Order Reversal of Order of Ops allows for Immediate pushing to stack resulting in what has the highest priority of
-    # the successor function being placed on top of the stack as the interpreter descends the code.
+    #Order Reversal of ops so children mimics fringe stack.
     #Right
-    copyLocation = currentNode.data.copy()
     copyLocation[COL] = copyLocation[COL] + 1
-    if is_floor(maze, copyLocation):
+    if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
         while maze[copyLocation[ROW]][copyLocation[COL] + 1] != WALL:
             copyLocation[COL] = copyLocation[COL] + 1
         newNode = Node(copyLocation, currentNode)
@@ -73,7 +77,7 @@ def tree_successor_func(maze, currentNode):
     #Down
     copyLocation = currentNode.data.copy()
     copyLocation[ROW] = copyLocation[ROW] + 1
-    if is_floor(maze, copyLocation):
+    if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
         while maze[copyLocation[ROW] + 1][copyLocation[COL]] != WALL:
             copyLocation[ROW] = copyLocation[ROW] + 1
         newNode = Node(copyLocation, currentNode)
@@ -81,7 +85,7 @@ def tree_successor_func(maze, currentNode):
     #Left
     copyLocation = currentNode.data.copy()
     copyLocation[COL] = copyLocation[COL] - 1
-    if is_floor(maze, copyLocation):
+    if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
         while maze[copyLocation[ROW]][copyLocation[COL] - 1] != WALL:
             copyLocation[COL] = copyLocation[COL] - 1
         newNode = Node(copyLocation, currentNode)
@@ -89,7 +93,7 @@ def tree_successor_func(maze, currentNode):
     #Up
     copyLocation = currentNode.data.copy()
     copyLocation[ROW] = copyLocation[ROW] - 1
-    if is_floor(maze, copyLocation):
+    if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
         while maze[copyLocation[ROW] - 1][copyLocation[COL]] != WALL:
             copyLocation[ROW] = copyLocation[ROW] - 1
         newNode = Node(copyLocation, currentNode)
@@ -102,27 +106,47 @@ def tree_search(maze):
     path = []
     start = coordinates_of(maze, ROBOT)
     goal = coordinates_of(maze, DIAMOND)
-    startNode = Node(start, None)
+    head = Node(start, None)
     goalFound = False
-    currentNode = Node(None, None)
+    currentNode = None
     #Fringe utilizing stack behavior
     #Stack Behavior in Python. Use append, highest index is top of stack. Pop removes highest index.
-    fringe = [startNode]
+    fringe = [head]
     while not goalFound and fringe:
         currentNode = fringe.pop()
-        #goal test
-        print(currentNode)
+        #TODO - goal test
+        goalFound = goal_test(goal, currentNode)
+        print(currentNode.data)
         if not goalFound:
             currentNode = tree_successor_func(maze, currentNode)
-            fringe.append(currentNode.children.copy())
+            fringe = append_to_fringe(fringe, currentNode)
         else:
-            #Populate path from current node
-            
+            path = populate_path(currentNode)
     return path
 
 #To be filled
 def graph_search(maze):
     return 0
+
+def populate_path(node):
+    path = []
+    currentNode = node.copy()
+    while currentNode != None:
+        path.insert(0, currentNode.data)
+        currentNode = currentNode.parent
+    return path
+
+def append_to_fringe(fringe, currentNode):
+    for node in currentNode.children:
+        fringe.append(node.copy())
+
+    return fringe
+
+def goal_test(goal, currentNode):
+    goalFound = False
+    if goal[ROW] == currentNode.data[ROW] and goal[COL] == currentNode.data[COL]:
+        goalFound = True
+    return goalFound
 
 
 # Prints the full maze
