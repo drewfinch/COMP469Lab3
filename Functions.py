@@ -24,7 +24,7 @@ class Node:
 
 def create_map():
     # map_name = input("Enter map name(try \"mazeMap.txt\"): ")
-    # map_name = "mazeMap.txt" # Expected Output: DEATH [2, 7] [1, 7] [1, 5] [3, 5] [1, 5] [3, 5] [1, 5]...
+    map_name = "mazeMap.txt" # Expected Output: DEATH [2, 7] [1, 7] [1, 5] [3, 5] [1, 5] [3, 5] [1, 5]...
     # map_name = "testMazeTree1.txt" # Expected Output: [1, 2] [1, 1] [2, 1]
     # map_name = "testMazeTree2.txt" # Expected Output: [3, 4] [2, 4] [2, 3] [1, 3] [1, 1] [3, 1]
     file = open(map_name, "r")
