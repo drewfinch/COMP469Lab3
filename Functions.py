@@ -116,7 +116,6 @@ def tree_search(maze):
     fringe = [head]
     while not goalFound and fringe:
         currentNode = fringe.pop()
-        #TODO - goal test
         goalFound = goal_test(goal, currentNode)
         print(currentNode.data)
         if not goalFound:
@@ -128,7 +127,24 @@ def tree_search(maze):
 
 #To be filled
 def graph_search(maze):
-    return 0
+    goalFound = False
+    start = coordinates_of(maze, ROBOT)
+    goal = coordinates_of(maze, DIAMOND)
+    closed = []
+    path = None
+    head = Node(start, None)
+    fringe = [head]
+    currentNode = None
+    while not goalFound and fringe:
+        currentNode = fringe.pop()
+        goalFound = goal_test(goal, currentNode)
+        if not goalFound and currentNode.data not in closed:
+            closed.append(currentNode.data)
+            currentNode = tree_successor_func(maze, currentNode)
+            fringe = append_to_fringe(fringe, currentNode)
+        elif goalFound:
+            path = populate_path(currentNode)
+    return path
 
 def populate_path(node):
     path = []
