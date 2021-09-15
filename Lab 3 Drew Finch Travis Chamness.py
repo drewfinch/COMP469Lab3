@@ -6,7 +6,7 @@ from Functions import *
 
 start_maze = create_map()
 print_maze(start_maze)
-# depth_first_search(start_maze)
-print(graph_search(start_maze))
-
+# graph_search(start_maze)
+# print(maze_search('tree',start_maze))
+maze_search('graph', start_maze)
 

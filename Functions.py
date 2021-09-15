@@ -144,6 +144,7 @@ def graph_search(maze):
             fringe = append_to_fringe(fringe, currentNode)
         elif goalFound:
             path = populate_path(currentNode)
+    print(path)
     return path
 
 def populate_path(node):
@@ -182,6 +183,12 @@ def print_maze(maze):
                 print(character, end=' ')
     print()
 
-
-
-
+def maze_search(strategy, maze):
+    path = None
+    if strategy == 'tree':
+        path = tree_search(maze)
+    elif strategy == 'graph':
+        path = graph_search(maze)
+    else:
+        print("Please specifiy either 'tree' or 'graph' for strategy.")
+    return path
