@@ -8,8 +8,7 @@ WALL = 1
 ROBOT = 2 # Refactored R to Robot, all instances in project updated. Purpose - Eliminate confusion with ROW Macro
 #Describes expected value at a location that we consider the Diamond's location
 DIAMOND = 3 # Refactored D to Diamond, all instances in project updated. Purpose - More descriptive
-#? Start Location ? Not used in creation of map.
-ROOT = -2
+
 
 #How would you like to use nodes in this project? An example or description will do :) tytyty
 class Node:
@@ -24,9 +23,7 @@ class Node:
 
 def create_map():
     # map_name = input("Enter map name(try \"mazeMap.txt\"): ")
-    map_name = "mazeMap.txt" # Expected Output: DEATH [2, 7] [1, 7] [1, 5] [3, 5] [1, 5] [3, 5] [1, 5]...
-    # map_name = "testMazeTree1.txt" # Expected Output: [1, 2] [1, 1] [2, 1]
-    # map_name = "testMazeTree2.txt" # Expected Output: [3, 4] [2, 4] [2, 3] [1, 3] [1, 1] [3, 1]
+    map_name = "mazeMap.txt"
     file = open(map_name, "r")
 
     maze = []
@@ -52,31 +49,24 @@ def create_map():
     return maze
 
 # coordinates_of determines the [ROW, COL] or R or D depending on what you pass as value
-def coordinates_of(maze, value):  # to find R and D
+def coordinates_of(maze, value):
     for i, x in enumerate(maze):
         if value in x:
             return [i, x.index(value)]
 
-#Checks that current location is not the wall
-#   Inlined Func: needed?
-#   Not going to use this function: Starting location is legal to return to, but if using this for checking
-#       valid position, is_floor only returns True if that space is 0.
-def is_floor(maze, coordinate):
-    return maze[coordinate[0]][coordinate[1]] == 0
-
-# successors will be pushed
-def tree_successor_func(maze, currentNode):
+# Evaluate available moves for agent. Available moves will be placed into the current state node as children.
+def successor_func(maze, currentNode):
     goalFound = False
     copyLocation = currentNode.data.copy()
     #Order Reversal of ops so children mimics fringe stack.
-    #Right
+    #Right - Evaluate right movement state if available
     copyLocation[COL] = copyLocation[COL] + 1
     if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
         while maze[copyLocation[ROW]][copyLocation[COL] + 1] != WALL:
             copyLocation[COL] = copyLocation[COL] + 1
         newNode = Node(copyLocation, currentNode)
         currentNode.children.append(newNode)
-    #Down
+    #Down - Evaluate down movement state if available
     copyLocation = currentNode.data.copy()
     copyLocation[ROW] = copyLocation[ROW] + 1
     if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
@@ -84,7 +74,7 @@ def tree_successor_func(maze, currentNode):
             copyLocation[ROW] = copyLocation[ROW] + 1
         newNode = Node(copyLocation, currentNode)
         currentNode.children.append(newNode)
-    #Left
+    #Left - Evaluate left movement state if available
     copyLocation = currentNode.data.copy()
     copyLocation[COL] = copyLocation[COL] - 1
     if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
@@ -92,7 +82,7 @@ def tree_successor_func(maze, currentNode):
             copyLocation[COL] = copyLocation[COL] - 1
         newNode = Node(copyLocation, currentNode)
         currentNode.children.append(newNode)
-    #Up
+    #Up - Evaluate up movement state if available
     copyLocation = currentNode.data.copy()
     copyLocation[ROW] = copyLocation[ROW] - 1
     if maze[copyLocation[ROW]][copyLocation[COL]] != WALL:
@@ -103,7 +93,7 @@ def tree_successor_func(maze, currentNode):
 
     return currentNode
 
-#To be filled
+# Tree implementation of DFS search algorithm
 def tree_search(maze):
     path = []
     start = coordinates_of(maze, ROBOT)
@@ -119,13 +109,14 @@ def tree_search(maze):
         goalFound = goal_test(goal, currentNode)
         print(currentNode.data)
         if not goalFound:
-            currentNode = tree_successor_func(maze, currentNode)
+            currentNode = successor_func(maze, currentNode)
             fringe = append_to_fringe(fringe, currentNode)
         else:
             path = populate_path(currentNode)
+    print(path)
     return path
 
-#To be filled
+# Graph implementation of DFS search algorithm
 def graph_search(maze):
     goalFound = False
     start = coordinates_of(maze, ROBOT)
@@ -140,13 +131,14 @@ def graph_search(maze):
         goalFound = goal_test(goal, currentNode)
         if not goalFound and currentNode.data not in closed:
             closed.append(currentNode.data)
-            currentNode = tree_successor_func(maze, currentNode)
+            currentNode = successor_func(maze, currentNode)
             fringe = append_to_fringe(fringe, currentNode)
         elif goalFound:
             path = populate_path(currentNode)
     print(path)
     return path
 
+# Returns an array of the locations traveled by the agent from Start to Goal
 def populate_path(node):
     path = []
     currentNode = node.copy()
@@ -155,10 +147,10 @@ def populate_path(node):
         currentNode = currentNode.parent
     return path
 
+# Add the current nodes children to the fringe
 def append_to_fringe(fringe, currentNode):
     for node in currentNode.children:
         fringe.append(node.copy())
-
     return fringe
 
 def goal_test(goal, currentNode):
@@ -183,6 +175,7 @@ def print_maze(maze):
                 print(character, end=' ')
     print()
 
+# Primary driver of functions
 def maze_search(strategy, maze):
     path = None
     if strategy == 'tree':

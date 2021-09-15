@@ -9,4 +9,5 @@ print_maze(start_maze)
 # graph_search(start_maze)
 # print(maze_search('tree',start_maze))
 maze_search('graph', start_maze)
+# maze_search('balogna', start_maze)
 
